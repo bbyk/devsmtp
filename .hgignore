@@ -1,0 +1,7 @@
+glob:*.pdb
+glob:*.ncb
+glob:*.suo
+glob:debug/*.*
+glob:Debug/*
+glob:*.user
+glob:Release/*
