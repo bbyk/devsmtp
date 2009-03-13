@@ -386,7 +386,7 @@ namespace DevSmtp
 	{
 		if (m_hFile == 0)
 		{
-			byte attempts = 5;
+			byte attempts = 50;
 			_TCHAR file_name[_MAX_PATH];
 						
 			tstring full_path;

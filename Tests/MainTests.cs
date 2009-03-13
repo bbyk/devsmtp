@@ -39,24 +39,49 @@ namespace DevSmtp.Tests
 
 			message.IsBodyHtml = isHtml;
 
-			// wait a second. we should allow our server to start.
-			Thread.Sleep(1000);
-
-			client.SendAsync(message, null);
+			client.Send(message);
 		}
 
 		static void Main()
 		{
+			const int threads = 10;
+			// wait a second. we should allow our server to start.
+			Thread.Sleep(1000);
+
 			var tests = new MainTests();
 
 			// Run one time
 			tests.SendMailTest();
 
+			int entered = threads;
+			int left = threads;
+			var mreEntered = new ManualResetEvent(false);
+			var mreLeft = new ManualResetEvent(false);				
+
 			// Run in a cycle
-			for (int i = 0; i < 10; i++)
+			for (int i = 0; i < threads; i++)
 			{
-				tests.SendMailTest();
+				ThreadPool.QueueUserWorkItem((state) =>
+				{
+					if (Interlocked.Decrement(ref entered) == 0)
+					{
+						mreEntered.Set();
+					}
+					else
+					{
+						mreEntered.WaitOne();
+					}
+
+					tests.SendMailTest();
+
+					if (Interlocked.Decrement(ref left) == 0)
+					{
+						mreLeft.Set();
+					}
+				});
 			}
+
+			mreLeft.WaitOne();
 		}
 	}
 }
