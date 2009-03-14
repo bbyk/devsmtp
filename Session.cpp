@@ -386,7 +386,7 @@ namespace DevSmtp
 	{
 		if (m_hFile == 0)
 		{
-			byte attempts = 50;
+			byte attempts = SAVEFILE_ATTEMPTS;
 			_TCHAR file_name[_MAX_PATH];
 						
 			tstring full_path;
@@ -394,18 +394,26 @@ namespace DevSmtp
 			full_path.append(m_pServer->m_pPath);
 			full_path.append("email-");
 
-			time_t tt = time( NULL );
-			srand((unsigned)tt);
+			time_t tt = time(NULL);
+			//srand((unsigned)tt);
+			static long fnIndex;
 			_TCHAR tmpbuf[16];
 			struct tm today;
-			localtime_s( &today, &tt );
+			localtime_s(&today, &tt);
 			_tcsftime(tmpbuf, sizeof(tmpbuf) / sizeof(_TCHAR), _T("%Y%m%d-%H%M%S"), &today);
 
 			full_path.append(tmpbuf);
 		
 			while (TRUE)
 			{
-				_stprintf_s(file_name, sizeof(file_name) / sizeof(_TCHAR), _T("%s-(%d).eml"), full_path.c_str(), rand());
+				if (SAVEFILE_ATTEMPTS == attempts)
+				{
+					_stprintf_s(file_name, sizeof(file_name) / sizeof(_TCHAR), _T("%s.eml"), full_path.c_str());
+				}
+				else
+				{
+					_stprintf_s(file_name, sizeof(file_name) / sizeof(_TCHAR), _T("%s-(%d).eml"), full_path.c_str(), InterlockedIncrement(&fnIndex));
+				}				
 
 				LOG1(_T("Saving email to '%s'"), file_name);
 
