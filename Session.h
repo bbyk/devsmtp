@@ -47,6 +47,7 @@ namespace DevSmtp
 		std::basic_string<char> m_line, m_outline;
 		STATE m_eState;
 		OPSTATE m_eOpState;
+		tstring m_pFrom;
 		void OnReadLine(void);
 		void OnIoComplete(DWORD);
 
@@ -66,6 +67,8 @@ namespace DevSmtp
 		void IssueAccept(void);
 		void CompleteReadLine(DWORD);
 		void IssueWrite(size_t pos);
+
+		void ExtractFromMail();
 	public:
 		Session( Server* );
 		~Session(void);

@@ -27,7 +27,7 @@ namespace DevSmtp.Tests
 
 		private void SendEmail(string from, string to, string subject, string body, bool isHtml, string host)
 		{
-			var message = new MailMessage(from, to);
+			var message = new MailMessage(new MailAddress(from, "test"), new MailAddress(to));
 
 			message.Body = body;
 			message.Subject = subject;
