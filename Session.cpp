@@ -392,12 +392,12 @@ namespace DevSmtp
 		const char* start = buffer;
 		while(*buffer != '\0' && *buffer++ != '>');
 
-		char* mail = (char*)malloc(buffer - start + 1);
+		char* mail = new char[buffer - start + 1];
 		strncpy_s(mail, buffer - start, start, _TRUNCATE);
 
 		m_pFrom.clear();
 		m_pFrom.append(TOLPTCHAR(mail));
-		free(mail);
+		delete[] mail;
 	}
 
 	void Session::IssueWriteFile(size_t pos)
