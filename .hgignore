@@ -5,3 +5,5 @@ glob:debug/*.*
 glob:Debug/*
 glob:*.user
 glob:Release/*
+glob:*.aps
+glob:*.sln.cache
