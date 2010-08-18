@@ -1,0 +1,9 @@
+*.pdb
+*.ncb
+*.suo
+debug/
+Debug/
+*.user
+Release/
+*.aps
+*.sln.cache
