@@ -307,8 +307,6 @@ namespace DevSmtp
 				IssueWrite(0);
 				return;
 			}
-			
-			ExtractFromMail();
 			m_eOpState = OPSTATE::RE_MAIL;
 			m_outline = "250 Ok\r\n";
 			IssueWrite(0);
@@ -360,7 +358,6 @@ namespace DevSmtp
 		case OPSTATE::QUIT_OR_MAIL:
 			if (strncmp(m_line.c_str(), "MAIL", 4) == 0)
 			{
-				ExtractFromMail();
 				m_eOpState = OPSTATE::RE_MAIL;
 				m_outline = "250 Ok\r\n";
 				IssueWrite(0);
@@ -385,58 +382,30 @@ namespace DevSmtp
 		return m_eState == STATE::WAIT_ACCEPT;
 	}
 
-	void Session::ExtractFromMail()
-	{
-		const char* buffer = m_line.c_str();
-		while(*buffer != '\0' && *buffer++ != '<');
-		const char* start = buffer;
-		while(*buffer != '\0' && *buffer++ != '>');
-
-		char* mail = new char[buffer - start + 1];
-		strncpy_s(mail, buffer - start, start, _TRUNCATE);
-
-		m_pFrom.clear();
-		m_pFrom.append(TOLPTCHAR(mail));
-		delete[] mail;
-	}
-
 	void Session::IssueWriteFile(size_t pos)
 	{
 		if (m_hFile == 0)
 		{
-			byte attempts = SAVEFILE_ATTEMPTS;
+			byte attempts = 5;
 			_TCHAR file_name[_MAX_PATH];
 						
 			tstring full_path;
 			full_path.reserve(_MAX_PATH);
 			full_path.append(m_pServer->m_pPath);
-			full_path.append(m_pFrom);
-
-			_tmkdir(full_path.c_str());
-
-			full_path.append("\\");
 			full_path.append("email-");
 
-			time_t tt = time(NULL);
-			//srand((unsigned)tt);
-			static long fnIndex;
+			time_t tt = time( NULL );
+			srand((unsigned)tt);
 			_TCHAR tmpbuf[16];
 			struct tm today;
-			localtime_s(&today, &tt);
+			localtime_s( &today, &tt );
 			_tcsftime(tmpbuf, sizeof(tmpbuf) / sizeof(_TCHAR), _T("%Y%m%d-%H%M%S"), &today);
 
 			full_path.append(tmpbuf);
 		
 			while (TRUE)
-			{				
-				if (SAVEFILE_ATTEMPTS == attempts)
-				{
-					_stprintf_s(file_name, sizeof(file_name) / sizeof(_TCHAR), _T("%s.eml"), full_path.c_str());
-				}
-				else
-				{
-					_stprintf_s(file_name, sizeof(file_name) / sizeof(_TCHAR), _T("%s-(%d).eml"), full_path.c_str(), InterlockedIncrement(&fnIndex));
-				}				
+			{
+				_stprintf_s(file_name, sizeof(file_name) / sizeof(_TCHAR), _T("%s-(%d).eml"), full_path.c_str(), rand());
 
 				LOG1(_T("Saving email to '%s'"), file_name);
 

@@ -12,7 +12,6 @@
 #include <mswsock.h> 
 #include <windows.h>
 #include <process.h>
-#include <direct.h>
 #include <stdio.h>
 #include <tchar.h>
 #include <cassert>

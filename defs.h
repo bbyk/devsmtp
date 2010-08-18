@@ -7,4 +7,3 @@
 #define DEFAULT_READ_BUFFER_SIZE 1024
 #define APP_NAME _T("DevSmtp")
 #define APP_NAME_DISPLAY _T("Development Smtp Server")
-#define SAVEFILE_ATTEMPTS 5
